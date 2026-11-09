@@ -16,7 +16,7 @@ No npm install, build step, API key, or GitHub secret is required. Relative asse
 - Specify start/end times and export in your browser.
 - Import direct media URLs when the source host permits browser downloads.
 
-Video export is lossy and real-time. Trimming is approximate. Resolution settings cannot recover detail absent from the source video.
+Export processes frames with FFmpeg in the browser. High-quality MP4 and lossless-rendered MKV are available. See EXPORT-UPDATE.txt for quality, timing and memory limits. Resolution settings cannot recover detail absent from the source.
 
 ## YouTube / Instagram / TikTok
 
@@ -53,3 +53,4 @@ For a fully online downloader that works without local software, a separate serv
 - `README.md`: these deployment instructions.
 
 No user videos, credentials, download history, or temporary files are included. Google Fonts is used for interface typography, with local font fallbacks.
+

@@ -1,0 +1,18 @@
+EXPORT UPDATE — FRAME-BY-FRAME RENDERING
+
+Export uses FFmpeg WebAssembly in a worker, not MediaRecorder or live playback capture. It runs on the page and needs no local helper for exporting. Video-link importing still uses the downloader described elsewhere in this package.
+
+Frame rate defaults to Match sources, using the highest supported source rate (including 29.97 / 59.94 rates). Choosing a lower rate than a source is rejected to prevent silently discarding frames. For variable-rate video, the output is normalized to a constant timeline. Trims snap to the nearest output frame. Lower-rate sources are duplicated as needed on a mixed-rate timeline, not motion-interpolated.
+
+High quality MP4: H.264 CRF 16 video, AAC 320 kbps audio. This remains lossy. Video is encoded once; segment assembly does not re-encode it a second time.
+Lossless MKV: FFV1 RGB video and uncompressed floating-point PCM audio after rendering/resampling. This avoids encoding loss after scaling, cropping, color conversion and compositing. It is not byte-identical to the source and cannot recover original detail or undo layout rescaling. HDR/10-bit mastering is not preserved by the 8-bit canvas overlay pipeline. Use native source files for archival preservation.
+
+The same canvas fonts, text colors and rank positions are rasterized to transparent PNG overlays and composited over the decoded source video, not a screenshot of playback. Output duration and decoded frame count are verified before downloading. Failed verification gives an error rather than an incomplete file.
+
+The ~32 MiB single-thread WebAssembly engine is included in vendor/ and loads only on export. Serve the app over HTTP/HTTPS, not file://. The server must serve .mjs and .js as text/javascript and .wasm as application/wasm. GitHub Pages works without special cross-origin-isolation headers. Files never leave the browser during export.
+
+Browser memory limits: input files above 512 MiB are rejected; intermediate segments above 900 MiB are rejected. Actual browser/device memory limits can be lower, particularly at 4K or with lossless projects. Shorter projects or a smaller output size may be necessary; rendering failure is explicit rather than silently dropping frames. Keep the page open; rendering speed does not affect the intended frame timeline.
+
+Validation: actual browser exports at 720 × 1280 from a mixed 60/24 fps two-clip project decoded to 120 video frames with audio. The same engine's regression renders produced exactly 120 frames at 60 fps for 2 seconds in MP4 and lossless MKV. A 60-frame lossless section was pixel-identical to the uncompressed composited RGB reference. These are test-case results, not a guarantee for every codec or project size.
+
+See licenses/THIRD-PARTY.txt for third-party notices and source locations.
